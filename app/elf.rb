@@ -34,6 +34,17 @@ module Elf
 
       def find_all_types(&callback)
         #returns array of waste types
+        AFMotion::SessionClient.shared.get("api/v1/snaps/find_all_types") do |result|
+          if result.success?
+            types = []
+            result.object["data"].each do |attributes|
+              types << attributes
+            end
+            callback.call(types, nil)
+          else
+            callback.call([], result.error)
+          end
+        end
       end
 
     end
