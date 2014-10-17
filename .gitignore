@@ -16,3 +16,7 @@ nbproject
 .sass-cache
 .idea
 .dat*.*
+ios_development.cer
+Gemfile.lock
+CollectorProvisioningProfile.mobileprovision
+CertificateSigningRequest.certSigningRequest
