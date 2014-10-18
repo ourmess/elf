@@ -1,6 +1,7 @@
 .repl_history
 build
 tags
+vendor/*
 app/pixate_code.rb
 resources/*.nib
 resources/*.momd
@@ -15,3 +16,7 @@ nbproject
 .sass-cache
 .idea
 .dat*.*
+ios_development.cer
+Gemfile.lock
+CollectorProvisioningProfile.mobileprovision
+CertificateSigningRequest.certSigningRequest
