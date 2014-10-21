@@ -13,7 +13,7 @@ class AssetTypeController < UIViewController
       @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Sso.form )
       @form_ctrl.form.on_submit do |form|
         NSLog("Successfully submited SSO")
-        Contribution.create( asset(type) ) do |c|
+        Contribution.create_sso( sanitary_sewer_overflow ) do |c|
           NSLog("Successfully contributed: #{c}")
         end
         self.navigationController.popViewControllerAnimated(true)
@@ -22,7 +22,7 @@ class AssetTypeController < UIViewController
       @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.form )
       @form_ctrl.form.on_submit do |form|
         NSLog("Successfully submited Cleaning Record")
-        Contribution.create( asset(type) ) do |c|
+        Contribution.create_cleaning_record( cleaning_record ) do |c|
           NSLog("Successfully contributed: #{c}")
         end
         self.navigationController.popViewControllerAnimated(true)
@@ -60,13 +60,24 @@ class AssetTypeController < UIViewController
 	end
 
  private
-  def asset(type)
-  	{
-  	  :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/dd_test_points/FeatureServer/0",
-  	  :type => type, #what type of asset are you contributing data for
-  	  :lat => "42.459239", #default current lat
-  	  :lon => "-72.850087" #default current lon
-  	}
+  def sanitary_sewer_overflow
+    {
+      :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/sso_event/FeatureServer/0",
+      :type => "Sanitary Sewer Overflow", #what type of asset are you contributing data for
+      :lat => "42.459239", #default current lat
+      :lon => "-72.850087", #default current lon
+      :spill_vol => "app spill_vol",
+      :spill_vol_recover => "app spill_vol_recover",
+      :spill_vol_reach_surf => "app spill_vol_reach_surf"
+    }
+  end
+  def cleaning_record
+    {
+      :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/vallecitos_wfs/FeatureServer/0",
+      :lat => "42.459239", #default current lat
+      :lon => "-72.850087", #default current lon
+      :cleaned_2014 => true
+    }
   end
   def asset_type_table
     table = UITableView.alloc.initWithFrame([[0,0],[@view.frame.size.width,@view.frame.size.height]])
@@ -75,14 +86,5 @@ class AssetTypeController < UIViewController
     table.backgroundColor = Provider::Color.ui_color("ebebf1")
     table.separatorColor = Provider::Color.ui_color("e0e0e0")
     table
-  end
-  def type_choice_button(type)
-    action_button = UIButton.buttonWithType UIButtonTypeRoundedRect
-    action_button.setTitle "#{type}", forState: UIControlStateNormal
-    action_button.frame = [[100, 100], [100, 50]]
-    action_button.when(UIControlEventTouchUpInside) do
-      NSLog("Firing onClick #{asset(type)}")
-    end
-    action_button
   end
 end
