@@ -21,9 +21,12 @@ class AssetTypeController < UIViewController
     when "Cleaning Record"
       @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.form )
       @form_ctrl.form.on_submit do |form|
-        NSLog("Successfully submited Cleaning Record")
-        Contribution.create_cleaning_record( cleaning_record ) do |c|
-          NSLog("Successfully contributed: #{c}")
+        NSLog("Successfully submited Cleaning Record: #{form.render}")
+        Asset.find_object_id_by_psr( asset_record(form.render[:psr]) ) do |a|
+          NSLog("Successfully discovered: #{a}")
+          Contribution.create_cleaning_record( cleaning_record(a.first) ) do |c|
+            NSLog("Successfully contributed: #{c}")
+          end
         end
         self.navigationController.popViewControllerAnimated(true)
       end
@@ -62,6 +65,7 @@ class AssetTypeController < UIViewController
  private
   def sanitary_sewer_overflow
     {
+      #:feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/dd_test_points/FeatureServer/0",
       :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/sso_event/FeatureServer/0",
       :type => "Sanitary Sewer Overflow", #what type of asset are you contributing data for
       :lat => "42.459239", #default current lat
@@ -71,12 +75,17 @@ class AssetTypeController < UIViewController
       :spill_vol_reach_surf => "app spill_vol_reach_surf"
     }
   end
-  def cleaning_record
+  def cleaning_record(oid)
     {
       :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/vallecitos_wfs/FeatureServer/0",
-      :lat => "42.459239", #default current lat
-      :lon => "-72.850087", #default current lon
-      :cleaned_2014 => true
+      :object_id => "#{oid}",
+      :cleaned_2014 => "YES"
+    }
+  end
+  def asset_record(psr)
+    {
+      :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/vallecitos_wfs/FeatureServer/0",
+      :psr => "#{psr}"
     }
   end
   def asset_type_table

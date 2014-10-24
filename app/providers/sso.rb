@@ -2,11 +2,11 @@ module Provider
   class Sso
     def self.form
       {
-        title: "Sso",
+        title: "SSO",
         sections: [
           {
             title: "General Information",
-             rows: [{
+            rows: [{
                title: "Vallecitos Water District",
                type: :static,
              },{
