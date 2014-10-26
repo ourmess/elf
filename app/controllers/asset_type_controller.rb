@@ -13,7 +13,16 @@ class AssetTypeController < UIViewController
       @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Sso.form )
       @form_ctrl.form.on_submit do |form|
         NSLog("Successfully submited SSO")
-        Contribution.create_sso( sanitary_sewer_overflow ) do |c|
+        Contribution.create_sso(
+          sanitary_sewer_overflow.merge! ({
+            :spill_poc_name => form.render[:spill_poc_name],
+            :spill_vol => form.render[:spill_vol],
+            :spill_vol_recover => form.render[:spill_vol_recover],
+            :spill_vol_reach_surf => form.render[:spill_vol_reach_surf],
+            :spill_zip => "92024",
+            :region => "1"
+          })
+        ) do |c|
           NSLog("Successfully contributed: #{c}")
         end
         self.navigationController.popViewControllerAnimated(true)
@@ -24,7 +33,13 @@ class AssetTypeController < UIViewController
         NSLog("Successfully submited Cleaning Record: #{form.render}")
         Asset.find_object_id_by_psr( asset_record(form.render[:psr]) ) do |a|
           NSLog("Successfully discovered: #{a}")
-          Contribution.create_cleaning_record( cleaning_record(a.first) ) do |c|
+          Contribution.create_cleaning_record(
+            cleaning_record.merge! ({
+              :object_id => "#{a.first}",
+              :comments => form.render[:comments],
+              :hours => form.render[:hours]
+            })
+          ) do |c|
             NSLog("Successfully contributed: #{c}")
           end
         end
@@ -68,18 +83,26 @@ class AssetTypeController < UIViewController
       #:feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/dd_test_points/FeatureServer/0",
       :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/sso_event/FeatureServer/0",
       :type => "Sanitary Sewer Overflow", #what type of asset are you contributing data for
-      :lat => "42.459239", #default current lat
-      :lon => "-72.850087", #default current lon
-      :spill_vol => "app spill_vol",
-      :spill_vol_recover => "app spill_vol_recover",
-      :spill_vol_reach_surf => "app spill_vol_reach_surf"
+      :lat => "0.0", #default current lat
+      :lon => "0.0", #default current lon
+      :spill_vol => "n/a",
+      :spill_vol_recover => "n/a",
+      :spill_vol_reach_surf => "n/a",
+      :spill_zip => "0",
+      :region => "0"
     }
   end
-  def cleaning_record(oid)
+  def cleaning_record
     {
       :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/vallecitos_wfs/FeatureServer/0",
-      :object_id => "#{oid}",
-      :cleaned_2014 => "YES"
+      :object_id => "1",
+      :clean_flush => "YES",
+      :cleaning_area => 5,
+      :cleaning_crew_1 => "t4SpatialUser1",
+      :cleaning_crew_2 => "t4SpatialUser2",
+      :vehicle_number => "Vehicle1",
+      :hours => "0",
+      :comments => "n/a"
     }
   end
   def asset_record(psr)
