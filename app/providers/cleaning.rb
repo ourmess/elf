@@ -25,7 +25,7 @@ module Provider
           }]
          },{
           rows: [{
-            title: "Submit",
+            title: "Submit PSR Clean",
             type: :submit,
           }]
          }]
@@ -33,4 +33,3 @@ module Provider
     end
   end
 end
-

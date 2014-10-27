@@ -95,9 +95,10 @@ class AssetTypeController < UIViewController
   def cleaning_record
     {
       :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/vallecitos_wfs/FeatureServer/0",
+      :date => "#{Time.new}",
       :object_id => "1",
       :clean_flush => "YES",
-      :cleaning_area => 5,
+      :cleaning_area => 2,
       :cleaning_crew_1 => "t4SpatialUser1",
       :cleaning_crew_2 => "t4SpatialUser2",
       :vehicle_number => "Vehicle1",
