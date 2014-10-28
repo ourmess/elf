@@ -7,7 +7,7 @@ module Provider
           title: "Pipe Segment Reference",
           key: :psr,
           select_one: true,
-          rows: Asset.find_all_by_coordinates()
+          rows: Asset::Mainline.find_all_by_coordinates()
          },{
           rows:[{
             title: "Hours",

@@ -31,7 +31,7 @@ class AssetTypeController < UIViewController
       @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.form )
       @form_ctrl.form.on_submit do |form|
         NSLog("Successfully submited Cleaning Record: #{form.render}")
-        Asset.find_object_id_by_psr( asset_record(form.render[:psr]) ) do |a|
+        Asset::Mainline.find_object_id_by_psr( asset_record(form.render[:psr]) ) do |a|
           NSLog("Successfully discovered: #{a}")
           Contribution.create_cleaning_record(
             cleaning_record.merge! ({
