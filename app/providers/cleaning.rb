@@ -3,118 +3,31 @@ module Provider
     def self.form
       {
         title: "Cleaning Record",
-        sections: [
-          {
-            title: "General Information",
-             rows: [{
-               title: "Vallecitos Water District",
-               type: :static,
-             },{
-               title: "Regional Water Board",
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "4"
-             },{
-               title: "Spill Location",
-               key: :text,
-               type: :text,
-               row_height: 100
-             }]
-           },{
-             footer: "Estimated spill volume that reached a separate storm drain that flows to a surface water body?",
-             rows: [{
-               title: "Estimate",
-               key: :spill1,
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "0"
-             }]
-           },{
-             footer: "Estimated spill volume recovered from the separate storm drain that flows to a surface water body? (Do not include water used for clean-up)",
-             rows: [{
-               title: "Estimate",
-               key: :spill2,
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "0"
-             }]
-           },{
-             footer: "Estimated spill volume that reached a drainage channel that flows to a surface water body?",
-             rows: [{
-               title: "Estimate",
-               key: :spill2,
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "0"
-             }]
-           },{
-             footer: "Estimated spill volume recovered from a drainage channel that flows to a surface water body?",
-             rows: [{
-               title: "Estimate",
-               key: :spill2,
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "0"
-             }]
-           },{
-             footer: "Estimated spill volume discharged directly to a surface water body?",
-             rows: [{
-               title: "Estimate",
-               key: :spill2,
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "0"
-             }]
-           },{
-             footer: "Estimated spill volume recovered from surface water body?",
-             rows: [{
-               title: "Estimate",
-               key: :spill2,
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "0"
-             }]
-           },{
-             footer: "Estimated spill volume discharged to land? (Includes discharges directly to land, and discharges to a storm drain system or drainage channel that flows to a storm water infiltration/retention structure, field, or other non-surface water location.)",
-             rows: [{
-               title: "Estimate",
-               key: :spill2,
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "0"
-             }]
-           },{
-             footer: "Estimated spill volume recovered from the discharge to land? (Do not include water used for clean-up)",
-             rows: [{
-               title: "Estimate",
-               key: :spill2,
-               type: :number,
-               auto_correction: :no,
-               auto_capitalization: :none,
-               input_accessory: :done,
-               placeholder: "0"
-             }]
-           }, {
-           rows: [{
-             title: "Submit",
-             type: :submit,
-           }]
+        sections: [{
+          title: "Pipe Segment Reference",
+          key: :psr,
+          select_one: true,
+          rows: Asset::Mainline.find_all_by_coordinates()
+         },{
+          rows:[{
+            title: "Hours",
+            key: :hours,
+            type: :number,
+            auto_correction: :no,
+            auto_capitalization: :none,
+            input_accessory: :done,
+            placeholder: "0"
+          },{
+          title: "Comments",
+          key: :comments,
+          type: :text,
+          row_height: 100
+          }]
+         },{
+          rows: [{
+            title: "Submit PSR Clean",
+            type: :submit,
+          }]
          }]
        }
     end

@@ -18,11 +18,11 @@ Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name = 'Collector'
   app.identifier = 'com.t4.collector'
-  app.version = '0.0.1'
-  app.short_version = '0.0.1'
+  app.version = '0.0.1.3'
+  app.short_version = '0.0.1.3'
   app.deployment_target =  '6.0'
   app.prerendered_icon = true
-  app.sdk_version = '8.0'
+  app.sdk_version = '8.1'
   app.delegate_class = 'AppDelegate'
   app.provisioning_profile = './CollectorProvisioningProfile.mobileprovision'
   app.icons = ['Icon-60','Icon-60@2x','Icon-60@3x','Icon-76','Icon-76@2x','Icon-Small-40','Icon-Small-40@2x','Icon-Small','Icon-Small@2x','Icon-Small@3x','Icon-57']
@@ -38,4 +38,5 @@ Motion::Project::App.setup do |app|
   app.testflight.api_token = '<api_token>'
   app.testflight.team_token = '<team_token>'
   app.testflight.app_token = '<app_token>'
+  
 end
