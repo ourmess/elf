@@ -29,7 +29,9 @@ class AssetTypeController < UIViewController
       end
     when "Cleaning Record"
       @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.form )
+      NSLog("sub #{@form_ctrl.form.sub_render}")
       @form_ctrl.form.on_submit do |form|
+        NSLog("sub1 #{@form_ctrl.form.sub_render}")
         NSLog("Successfully submited Cleaning Record: #{form.render}")
         Asset::Mainline.find_object_id_by_psr( asset_record(form.render[:psr]) ) do |a|
           NSLog("Successfully discovered: #{a}")
@@ -89,7 +91,10 @@ class AssetTypeController < UIViewController
       :spill_vol_recover => "n/a",
       :spill_vol_reach_surf => "n/a",
       :spill_zip => "0",
-      :region => "0"
+      :region => "0",
+      :agency => "Vallecitos Water District",
+      :spill_type => "Category 3",
+      :responsible_party => "responsible party"
     }
   end
   def cleaning_record
