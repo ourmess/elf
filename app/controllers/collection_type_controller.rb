@@ -1,10 +1,10 @@
-class AssetTypeController < UIViewController
+class CollectionTypeController < UIViewController
   def viewDidLoad
   	@view = self.view
     @view.backgroundColor = Provider::Color.ui_color("F18239")
-    @asset_types = AssetType.all
+    @collection_types = CollectionType.all
     #self.navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemSave, target:self, action:'submit')
-    @view.addSubview(asset_type_table)
+    @view.addSubview(collection_type_table)
   end
 
   def form(type)
@@ -28,25 +28,7 @@ class AssetTypeController < UIViewController
         self.navigationController.popViewControllerAnimated(true)
       end
     when "Cleaning Record"
-      @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.form )
-      NSLog("sub #{@form_ctrl.form.sub_render}")
-      @form_ctrl.form.on_submit do |form|
-        NSLog("sub1 #{@form_ctrl.form.sub_render}")
-        NSLog("Successfully submited Cleaning Record: #{form.render}")
-        Asset::Mainline.find_object_id_by_psr( asset_record(form.render[:psr]) ) do |a|
-          NSLog("Successfully discovered: #{a}")
-          Contribution.create_cleaning_record(
-            cleaning_record.merge! ({
-              :object_id => "#{a.first}",
-              :comments => form.render[:comments],
-              :hours => form.render[:hours]
-            })
-          ) do |c|
-            NSLog("Successfully contributed: #{c}")
-          end
-        end
-        self.navigationController.popViewControllerAnimated(true)
-      end
+      @form_ctrl = CleaningRecordController.alloc.init
     else
       NSLog("Unsupported form type")
       @form_ctrl = nil
@@ -59,24 +41,24 @@ class AssetTypeController < UIViewController
 	end
 
   def tableView(tableView, didSelectRowAtIndexPath: indexPath)
-		NSLog("AssetTypeController > tableView > didSelectRowAtIndexPath")
-    form( @asset_types[indexPath.row] )
+		NSLog("CollectionTypeController > tableView > didSelectRowAtIndexPath")
+    form( @collection_types[indexPath.row] )
 	end
 
 	def tableView(tableView, cellForRowAtIndexPath: indexPath)
 		cell_view = UIView.alloc.initWithFrame [[5,5], [@view.frame.size.width, 50]]
-		cell = tableView.dequeueReusableCellWithIdentifier("NORMAL_ASSET_TYPE_CELL") || begin
+		cell = tableView.dequeueReusableCellWithIdentifier("NORMAL_COLLECTION_TYPE_CELL") || begin
 			UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuseIdentifier)
 		end
-    if @asset_types[indexPath.row]
+    if @collection_types[indexPath.row]
       cell.textLabel.font = UIFont.fontWithName("HelveticaNeue", size:18)
-		  cell.textLabel.text = "#{@asset_types[indexPath.row]}"
+		  cell.textLabel.text = "#{@collection_types[indexPath.row]}"
     end
     cell
   end
 
   def tableView(tableView, numberOfRowsInSection: section)
-		@asset_types.size
+		@collection_types.size
 	end
 
  private
@@ -97,27 +79,7 @@ class AssetTypeController < UIViewController
       :responsible_party => "responsible party"
     }
   end
-  def cleaning_record
-    {
-      :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/vallecitos_wfs/FeatureServer/0",
-      :date => "#{Time.new}",
-      :object_id => "1",
-      :clean_flush => "YES",
-      :cleaning_area => 2,
-      :cleaning_crew_1 => "t4SpatialUser1",
-      :cleaning_crew_2 => "t4SpatialUser2",
-      :vehicle_number => "Vehicle1",
-      :hours => "0",
-      :comments => "n/a"
-    }
-  end
-  def asset_record(psr)
-    {
-      :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/vallecitos_wfs/FeatureServer/0",
-      :psr => "#{psr}"
-    }
-  end
-  def asset_type_table
+  def collection_type_table
     table = UITableView.alloc.initWithFrame([[0,0],[@view.frame.size.width,@view.frame.size.height]])
     table.dataSource = self
     table.delegate = self
