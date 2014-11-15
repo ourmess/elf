@@ -1,56 +1,60 @@
 class CleaningRecordController < UIViewController
   def viewDidLoad
+    @self = self
   	@view = self.view
     @view.backgroundColor = Provider::Color.ui_color("F18239")
-    #self.navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemSave, target:self, action:'submit')
-    @view.addSubview(cleaning_record_table)
+    form
   end
 
   def form
-    @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.form )
-    NSLog("sub #{@form_ctrl.form.sub_render}")
+    @form_ctrl = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.general_form )
+    @completion_form_controller = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.follow_up_form )
+    @child_form_controller = Formotion::FormController.alloc.initWithForm( Provider::Cleaning.record_form )
+
     @form_ctrl.form.on_submit do |form|
-      NSLog("sub1 #{@form_ctrl.form.sub_render}")
-      NSLog("Successfully submited Cleaning Record: #{form.render}")
-      Asset::Mainline.find_object_id_by_psr( asset_record(form.render[:psr]) ) do |a|
-        NSLog("Successfully discovered: #{a}")
-        Contribution.create_cleaning_record(
-          cleaning_record.merge! ({
-            :object_id => "#{a.first}",
-            :comments => form.render[:comments],
-            :hours => form.render[:hours]
-          })
-        ) do |c|
-          NSLog("Successfully contributed: #{c}")
+      NSLog("general_form #{@child_form_controller.form.sub_render}")
+      NSLog("Successfully submited general form: #{form.render}")
+
+      @child_form_controller.form.on_submit do |child_form|
+        NSLog("record_form #{@child_form_controller.form.sub_render}")
+        NSLog("Successfully submited general form: #{form.render}")
+        NSLog("Successfully submited cleaning record form: #{child_form.render}")
+
+        Asset::Mainline.find_object_id_by_psr( asset_record(child_form.render[:psr]) ) do |a|
+          NSLog("Successfully discovered: #{a}")
+          Contribution.create_cleaning_record(
+            cleaning_record.merge! ({
+              :object_id => "#{a.first}",
+              :comments => child_form.render[:comments],
+              :hours => child_form.render[:hours],
+              :cleaning_area => form.render[:cleaning_area].to_i,
+              :vehicle_number => form.render[:vehicle_number],
+              :cleaning_crew => form.render[:field_crew].join(","),
+              :cleaning_priority => form.render[:cleaning_priority]
+            })
+          ) do |c|
+            NSLog("Successfully contributed: #{c}")
+
+            @completion_form_controller.form.on_submit do |completion_form|
+              NSLog("follow_up_form #{@completion_form_controller.form.sub_render}")
+              NSLog("Successfully submited general form: #{form.render}")
+              NSLog("Successfully submited cleaning record form: #{child_form.render}")
+              NSLog("Successfully submited follow up activity: #{completion_form.render}")
+
+              child_form.reset
+              @self.navigationController.popViewControllerAnimated(true)
+            end
+
+            @self.navigationController.pushViewController(@completion_form_controller, animated: true)
+          end
         end
       end
-      self.navigationController.popViewControllerAnimated(true)
+
+      @self.navigationController.pushViewController(@child_form_controller, animated: true)
     end
-    if @form_ctrl then self.navigationController.pushViewController(@form_ctrl, animated: true) end
+
+    if @form_ctrl && @child_form_controller && @completion_form_controller then @self.navigationController.pushViewController(@form_ctrl, animated: true) end
   end
-
-  def tableView(tableView, heightForRowAtIndexPath: indexPath)
-		70
-	end
-
-  def tableView(tableView, didSelectRowAtIndexPath: indexPath)
-		NSLog("CleaningRecordController > tableView > didSelectRowAtIndexPath")
-    form
-	end
-
-	def tableView(tableView, cellForRowAtIndexPath: indexPath)
-		cell_view = UIView.alloc.initWithFrame [[5,5], [@view.frame.size.width, 50]]
-		cell = tableView.dequeueReusableCellWithIdentifier("NORMAL_ASSET_TYPE_CELL") || begin
-			UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:@reuseIdentifier)
-		end
-    cell.textLabel.font = UIFont.fontWithName("HelveticaNeue", size:18)
-		cell.textLabel.text = "Test"
-    cell
-  end
-
-  def tableView(tableView, numberOfRowsInSection: section)
-		3
-	end
 
  private
   def cleaning_record
@@ -60,11 +64,11 @@ class CleaningRecordController < UIViewController
       :object_id => "1",
       :clean_flush => "YES",
       :cleaning_area => 2,
-      :cleaning_crew_1 => "t4SpatialUser1",
-      :cleaning_crew_2 => "t4SpatialUser2",
+      :cleaning_crew => "t4SpatialUser1",
       :vehicle_number => "Vehicle1",
       :hours => "0",
-      :comments => "n/a"
+      :comments => "n/a",
+      :cleaning_priority => "None"
     }
   end
   def asset_record(psr)
@@ -72,13 +76,5 @@ class CleaningRecordController < UIViewController
       :feature_service_url => "http://services3.arcgis.com/UyxiNa6T5RHXF0kI/arcgis/rest/services/vallecitos_wfs/FeatureServer/0",
       :psr => "#{psr}"
     }
-  end
-  def cleaning_record_table
-    table = UITableView.alloc.initWithFrame([[0,0],[@view.frame.size.width,@view.frame.size.height]])
-    table.dataSource = self
-    table.delegate = self
-    table.backgroundColor = Provider::Color.ui_color("ebebf1")
-    table.separatorColor = Provider::Color.ui_color("e0e0e0")
-    table
   end
 end
