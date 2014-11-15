@@ -14,12 +14,15 @@ require 'bubble-wrap/location'
 require 'bubble-wrap/ui'
 require 'formotion'
 
+# https://github.com/clayallsopp/formotion/issues/209
+ENV['ARR_CYCLES_DISABLE'] ||= '1'
+
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name = 'Collector'
   app.identifier = 'com.t4.collector'
-  app.version = '0.0.1.3'
-  app.short_version = '0.0.1.3'
+  app.version = '0.0.1.5'
+  app.short_version = '0.0.1.5'
   app.deployment_target =  '6.0'
   app.prerendered_icon = true
   app.sdk_version = '8.1'
