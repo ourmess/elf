@@ -15,8 +15,8 @@ module Asset
     end
     def self.find_all_by_coordinates()
       BW::Location.get_once() do |result|
-        lat = "#{result.coordinate.latitude}"
-        lon = "#{result.coordinate.longitude}"
+        lat = "#{result.coordinate.latitude}" rescue "undefined"
+        lon = "#{result.coordinate.longitude}" rescue "undefined"
         asset = {:lat => "#{lat}", :lon => "#{lon}"}
         NSLog("Preparing to submit asset: #{BW::JSON.generate(asset)}")
       end

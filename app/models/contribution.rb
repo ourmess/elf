@@ -1,8 +1,8 @@
 class Contribution
   def self.create_sso(asset,&block)
     BW::Location.get_once() do |result|
-      asset[:lat] = "#{result.coordinate.latitude}"
-      asset[:lon] = "#{result.coordinate.longitude}"
+      asset[:lat] = "#{result.coordinate.latitude}" rescue "undefined"
+      asset[:lon] = "#{result.coordinate.longitude}" rescue "undefined"
       NSLog("Successfully obtained current location: lat#{asset[:lat]} lon#{asset[:lon]}")
       NSLog("Preparing to submit asset: #{BW::JSON.generate(asset)}")
       AFMotion::JSON.post("http://www.idiotmenus.com:3000/api/v1/contributions/create_sso", { data: BW::JSON.generate(asset) } ) do |response|
